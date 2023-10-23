@@ -50,3 +50,22 @@ docker-compose down --remove-orphans
 # To run App via Maven after start MariaDB via Docker Compose
 mvn clean spring-boot:run
 ```
+
+- Swagger API Documentation
+
+Access [http://localhost:8000/swagger-ui/index.html](http://localhost:8000/swagger-ui/index.html)
+
+- MariaDB connection parameters
+
+```bash
+# By JDBC URL
+URL=jdbc:mariadb://localhost:3306/sample
+
+# By connection parameters
+HOST=localhost
+PORT=3306
+DATABASE=sample
+
+USERNAME=root
+PASSWORD=root
+```
