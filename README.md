@@ -13,6 +13,43 @@ This sample project contains a simple set of group/members API using:
   - [modelmapper](https://modelmapper.org/)
   - [MariaDB Java Client](https://mariadb.com/kb/en/about-mariadb-connector-j/)
 
+## Security Features
+- User registration and login with JWT authentication 
+- Password encryption using BCrypt 
+- Role-based authorization with Spring Security 
+- Customized access denied handling 
+- Logout mechanism 
+- Refresh token
+
+Using:
+- JSON Web Tokens (JWT)
+- BCrypt
+
+Users included in test data
+```bash
+# User with USER role
+email: user@mail.com
+pwd: user123
+
+# User with ADMIN role
+email: admin@mail.com
+pwd: admin123
+```
+
+Public URLs
+- /  <> Home and simple text with Swagger Doc link
+- /auth/authenticate  <> Authentication URL
+- /auth/register  <> Register a new user with specific role (ADMIN or USER)
+
+CURL to execute logout
+```bash
+# Change the bearer token
+curl -X 'GET' \                                                                                                                  6.35G    100% █  702 Mbps   ─╯
+  'http://localhost:8000/auth/logout' \
+  -H 'accept: */*' \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBtYWlsLmNvbSIsImlhdCI6MTY5ODA0Mzc1NywiZXhwIjoxNjk4MTMwMTU3fQ.O4XqiJpFbnUHIiqS0xOVSYARpHcdOZJerPIx8ZjhhmA'
+```
+
 ## Pre-requirements
 - ![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)
 - ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)

@@ -1,5 +1,6 @@
 package br.edu.fatecsjc.lgnspringapi.resource;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +11,8 @@ import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/")
-public class HelloWorldResource {
+@Tag(name = "Root")
+public class RootResource {
     @Value("${server.port}")
     private String port;
     @GetMapping
