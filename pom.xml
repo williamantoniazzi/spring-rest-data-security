@@ -8,17 +8,21 @@
 		<version>3.4.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>br.edu.fatecsjc</groupId>
 	<artifactId>lgn-spring-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>lgn-spring-api</name>
 	<description>Demo server project using Spring Data JPA, Security and Flyway</description>
+
 	<properties>
 		<java.version>17</java.version>
 		<jjwt.version>0.11.5</jjwt.version>
 		<modelmapper.version>3.1.0</modelmapper.version>
 		<springdoc.version>2.8.6</springdoc.version>
+		<jacoco.version>0.8.11</jacoco.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -63,6 +67,31 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.13.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.13.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -94,7 +123,7 @@
 		</dependency>
 	</dependencies>
 
-<build>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -119,6 +148,49 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version> <executions>
+				<execution>
+					<goals>
+						<goal>prepare-agent</goal> </goals>
+				</execution>
+				<execution>
+					<id>report</id>
+					<phase>test</phase> <goals>
+					<goal>report</goal> </goals>
+				</execution>
+				<execution>
+					<id>jacoco-check</id>
+					<goals>
+						<goal>check</goal>
+					</goals>
+					<configuration>
+						<rules>
+							<rule>
+								<element>BUNDLE</element> <limits>
+								<limit>
+									<counter>LINE</counter> <value>COVEREDRATIO</value>
+									<minimum>0.10</minimum> </limit>
+								<limit>
+									<counter>BRANCH</counter> <value>COVEREDRATIO</value>
+									<minimum>0.0</minimum> </limit>
+							</limits>
+							</rule>
+						</rules>
+						<excludes>
+							<exclude>**/br/edu/fatecsjc/lgnspringapi/LgnSpringApiApplication.class</exclude>
+							<exclude>**/br/edu/fatecsjc/lgnspringapi/security/config/**</exclude>
+							<exclude>**/br/edu/fatecsjc/lgnspringapi/entity/**</exclude>
+							<exclude>**/br/edu/fatecsjc/lgnspringapi/dto/**</exclude>
+							<exclude>**/br/edu/fatecsjc/lgnspringapi/exception/**</exclude>
+						</excludes>
+					</configuration>
+				</execution>
+			</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class MemberDTO {
     @Schema(hidden = true)
     private Long id;
