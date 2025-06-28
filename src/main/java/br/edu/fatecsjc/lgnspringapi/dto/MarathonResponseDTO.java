@@ -33,4 +33,5 @@ public class MarathonResponseDTO {
                 .score(marathon.getScore())
                 .build();
     }
+
 }

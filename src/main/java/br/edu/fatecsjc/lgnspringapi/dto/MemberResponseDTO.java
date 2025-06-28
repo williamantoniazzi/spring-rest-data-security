@@ -19,6 +19,7 @@ public class MemberResponseDTO {
     private Long id;
     private String name;
     private Integer age;
+    private String email; // ADICIONADO: Campo para o e-mail do membro
     private Long groupId; // ID do grupo (para evitar recursão)
     private String groupName; // Nome do grupo (para visualização rápida)
     private List<MarathonResponseDTO> marathons; // Lista de maratonas participadas (usando DTO)
@@ -57,6 +58,7 @@ public class MemberResponseDTO {
                 .id(member.getId())
                 .name(member.getName())
                 .age(member.getAge())
+                .email(member.getEmail()) // ADICIONADO: Mapeamento do campo email da entidade para o DTO
                 .groupId(groupId)    // ID do grupo
                 .groupName(groupName) // Nome do grupo
                 .marathons(marathonDTOs) // DTOs das maratonas (se carregadas)

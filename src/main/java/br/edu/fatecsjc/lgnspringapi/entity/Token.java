@@ -31,6 +31,7 @@ public class Token {
     private String token;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private TokenType tokenType = TokenType.BEARER;
 
     private boolean revoked;

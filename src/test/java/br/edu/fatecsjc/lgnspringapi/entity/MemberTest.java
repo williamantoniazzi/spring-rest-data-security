@@ -19,7 +19,8 @@ class MemberTest {
     // Helper para criar uma instância simples de Marathon (entidade)
     // Assumindo que você tem uma entidade Marathon, caso contrário, crie um stub simples.
     private Marathon createSampleMarathon(Long id, String name) {
-        return Marathon.builder().id(id).name(name).build();
+        // Para que esta linha funcione, a entidade Marathon DEVE TER UM CAMPO 'name'
+        return Marathon.builder().id(id).identification(identification).build();
     }
 
     // Helper para criar uma instância de Member para reutilização
@@ -33,7 +34,7 @@ class MemberTest {
                 .id(1L)
                 .name("John Doe")
                 .age(30)
-                .email("john.doe@example.com")
+                .email("john.doe@example.com") // Este campo 'email' é esperado na entidade Member
                 .group(group)
                 .marathons(marathons)
                 .build();
@@ -48,13 +49,13 @@ class MemberTest {
         assertEquals(1L, member.getId());
         assertEquals("John Doe", member.getName());
         assertEquals(30, member.getAge());
-        assertEquals("john.doe@example.com", member.getEmail());
+        assertEquals("john.doe@example.com", member.getEmail()); // getEmail() é esperado
         assertNotNull(member.getGroup());
         assertEquals(1L, member.getGroup().getId());
         assertEquals("Group A", member.getGroup().getName());
         assertNotNull(member.getMarathons());
         assertEquals(2, member.getMarathons().size());
-        assertEquals("Marathon X", member.getMarathons().get(0).getName());
+        assertEquals("Marathon X", member.getMarathons().get(0).getName()); // getName() em Marathon é esperado
     }
 
     @Test
@@ -65,7 +66,7 @@ class MemberTest {
         member.setId(2L);
         member.setName("Jane Smith");
         member.setAge(25);
-        member.setEmail("jane.smith@example.com");
+        member.setEmail("jane.smith@example.com"); // setEmail() é esperado
         Group newGroup = createSampleGroup(2L, "Group B");
         member.setGroup(newGroup);
         List<Marathon> newMarathons = new ArrayList<>();
@@ -91,6 +92,7 @@ class MemberTest {
         List<Marathon> marathons = new ArrayList<>();
         marathons.add(createSampleMarathon(301L, "Marathon Alpha"));
 
+        // O construtor completo deve incluir o campo 'email'
         Member member = new Member(3L, "All Args Member", 40, "allargs@example.com", group, marathons);
 
         assertEquals(3L, member.getId());

@@ -31,6 +31,7 @@ public class Member {
 
     private String name;
     private Integer age;
+    private String email;
 
     @ManyToOne(fetch = FetchType.LAZY) // Anotação JPA: Define um relacionamento muitos-para-um com a entidade 'Group'.
     // Função: Muitos membros podem pertencer a um único grupo.

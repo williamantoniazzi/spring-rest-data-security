@@ -30,6 +30,8 @@ public class Organization {
 
     private String name;
 
+    private String cnpj;
+
     @Embedded
     private Address address;
 

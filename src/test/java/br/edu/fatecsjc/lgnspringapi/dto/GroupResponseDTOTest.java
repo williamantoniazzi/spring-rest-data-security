@@ -2,6 +2,7 @@ package br.edu.fatecsjc.lgnspringapi.dto;
 
 import br.edu.fatecsjc.lgnspringapi.entity.Group;
 import br.edu.fatecsjc.lgnspringapi.entity.Member;
+import br.edu.fatecsjc.lgnspringapi.dto.MemberResponseDTO;
 import br.edu.fatecsjc.lgnspringapi.entity.Organization;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

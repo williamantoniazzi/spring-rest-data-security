@@ -100,15 +100,3 @@ class GroupDTOTest {
         assertTrue(groupDTO.getMembers().isEmpty());
     }
 }
-
-// STUB de MemberDTO para o teste, se você ainda não o forneceu.
-// REMOVA esta classe interna se você já tiver br.edu.fatecsjc.lgnspringapi.dto.MemberDTO.java
-@lombok.Data
-@lombok.AllArgsConstructor
-@lombok.NoArgsConstructor
-@lombok.Builder
-class MemberDTO {
-    private Long id;
-    private String name;
-    private String email;
-}

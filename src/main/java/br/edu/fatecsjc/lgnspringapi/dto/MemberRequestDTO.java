@@ -4,6 +4,7 @@ import br.edu.fatecsjc.lgnspringapi.entity.Member;    // Importa a entidade Memb
 import br.edu.fatecsjc.lgnspringapi.entity.Group;    // Importa a entidade Group para mapeamento
 import br.edu.fatecsjc.lgnspringapi.entity.Marathon; // Importa a entidade Marathon para mapeamento
 
+import jakarta.validation.constraints.Email;        // Para validação de email
 import jakarta.validation.constraints.Min;        // Para validação
 import jakarta.validation.constraints.NotBlank;   // Para validação
 import jakarta.validation.constraints.NotNull;    // Para validação
@@ -29,6 +30,10 @@ public class MemberRequestDTO {
     @Min(value = 0, message = "A idade não pode ser negativa.") // Garante que a idade não seja negativa
     private Integer age;
 
+    @NotBlank(message = "O e-mail do membro é obrigatório.") // Garante que o email não seja vazio
+    @Email(message = "Formato de e-mail inválido.") // Garante que seja um formato de e-mail válido
+    private String email; // ADICIONADO: Campo para o e-mail do membro
+
     @NotNull(message = "O ID do grupo é obrigatório para associar o membro.") // Garante que o ID do grupo não seja nulo
     private Long groupId; // ID do grupo ao qual o membro pertence
 
@@ -50,6 +55,7 @@ public class MemberRequestDTO {
         return Member.builder()
                 .name(this.name)
                 .age(this.age)
+                .email(this.email) // ADICIONADO: Mapeamento do campo email
                 .group(group)         // Associa a entidade Group recebida
                 .marathons(marathons) // Associa a lista de entidades Marathon (pode ser nula)
                 .build();

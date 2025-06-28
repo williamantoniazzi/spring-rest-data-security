@@ -1,5 +1,7 @@
 package br.edu.fatecsjc.lgnspringapi.config;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post; // Para o método post()
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken; // Para a classe UsernamePasswordAuthenticationToken
 import br.edu.fatecsjc.lgnspringapi.enums.Permission;
 import br.edu.fatecsjc.lgnspringapi.enums.Role;
 import br.edu.fatecsjc.lgnspringapi.service.JwtService;
