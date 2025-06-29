@@ -19,7 +19,7 @@ spring:
     # - org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementWebSecurityAutoConfiguration
 
   # Desabilita Flyway/Liquibase nos testes se você não quiser rodá-los contra o H2
-  # flyway:
-  #   enabled: false
-  # liquibase:
-  #   enabled: false
+  flyway:
+    enabled: false
+  liquibase:
+    enabled: false
