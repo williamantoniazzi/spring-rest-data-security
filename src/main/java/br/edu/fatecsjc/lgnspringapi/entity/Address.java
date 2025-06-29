@@ -2,23 +2,80 @@ package br.edu.fatecsjc.lgnspringapi.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
+import lombok.EqualsAndHashCode;
 
-@Getter // Anotação do Lombok: Gera automaticamente os métodos 'get' para todos os atributos da classe (ex: getStreet()).
-@Setter // Anotação do Lombok: Gera automaticamente os métodos 'set' para todos os atributos da classe (ex: setStreet(String street)).
-@ToString // Anotação do Lombok: Gera automaticamente o método 'toString()', útil para depuração e exibição do objeto.
-@AllArgsConstructor // Anotação do Lombok: Gera um construtor com todos os atributos da classe como argumentos.
-@NoArgsConstructor // Anotação do Lombok: Gera um construtor sem argumentos. Essencial para frameworks como JPA e Spring.
-@Builder // Anotação do Lombok: Gera o padrão de projeto 'Builder', que facilita a criação de objetos complexos de forma mais legível.
-@Embeddable // Anotação JPA: Marca esta classe como um tipo de valor embutível.
-// Isso significa que os atributos de 'Address' serão armazenados como colunas
-// na mesma tabela da entidade que 'contém' um objeto 'Address', em vez de em uma tabela separada.
-
+@EqualsAndHashCode
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Embeddable
 public class Address {
-
     private String street;
     private String number;
     private String neighborhood;
     private String zipCode;
     private String city;
     private String state;
+    private String country;
+	
+
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
 }

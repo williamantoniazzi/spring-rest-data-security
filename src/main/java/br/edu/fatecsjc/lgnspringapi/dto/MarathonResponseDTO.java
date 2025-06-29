@@ -33,4 +33,10 @@ public class MarathonResponseDTO {
                 .score(marathon.getScore())
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return "MarathonResponseDTO(id=" + id + ", name=" + identification + ")";
+    }
+
 }

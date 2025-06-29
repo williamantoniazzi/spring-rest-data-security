@@ -21,12 +21,12 @@ class MemberResponseDTOTest {
 
     // Helper para criar uma instância simples de Marathon (entidade)
     private Marathon createSampleMarathon(Long id, String name) {
-        return Marathon.builder().id(id).name(name).build();
+        return Marathon.builder().id(id).identification(name).build();
     }
 
     // Helper para criar uma instância simples de MarathonResponseDTO
     private MarathonResponseDTO createSampleMarathonResponseDTO(Long id, String name) {
-        return MarathonResponseDTO.builder().id(id).name(name).build();
+        return MarathonResponseDTO.builder().id(id).identification(name).build();
     }
 
     private MemberResponseDTO createSampleMemberResponseDTO() {
@@ -55,7 +55,7 @@ class MemberResponseDTOTest {
         assertEquals("Response Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
         assertEquals(1, dto.getMarathons().size());
-        assertEquals("Resp Marathon 1", dto.getMarathons().get(0).getName());
+        assertEquals("Resp Marathon 1", dto.getMarathons().get(0).getIdentification());
     }
 
     @Test
@@ -144,8 +144,8 @@ class MemberResponseDTOTest {
         assertEquals("Test Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
         assertEquals(2, dto.getMarathons().size());
-        assertEquals("Marathon A", dto.getMarathons().get(0).getName());
-        assertEquals("Marathon B", dto.getMarathons().get(1).getName());
+        assertEquals("Marathon A", dto.getMarathons().get(0).getIdentification());
+        assertEquals("Marathon B", dto.getMarathons().get(1).getIdentification());
     }
 
     @Test

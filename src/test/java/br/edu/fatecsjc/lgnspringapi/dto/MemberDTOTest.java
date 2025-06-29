@@ -13,7 +13,7 @@ class MemberDTOTest {
                 .id(1L)
                 .name("Member DTO Name")
                 .age(28)
-                .email("dto.member@example.com")
+                .email("member.dto@example.com") // ADICIONADO: Email no builder
                 .build();
     }
 
@@ -26,7 +26,7 @@ class MemberDTOTest {
         assertEquals(1L, memberDTO.getId());
         assertEquals("Member DTO Name", memberDTO.getName());
         assertEquals(28, memberDTO.getAge());
-        assertEquals("dto.member@example.com", memberDTO.getEmail());
+        assertEquals("member.dto@example.com", memberDTO.getEmail()); // ADICIONADO: Verificação do email
     }
 
     @Test
@@ -36,30 +36,32 @@ class MemberDTOTest {
         memberDTO.setId(2L);
         memberDTO.setName("Updated DTO Name");
         memberDTO.setAge(35);
-        memberDTO.setEmail("updated.dto@example.com");
+        memberDTO.setEmail("updated.dto@example.com"); // ADICIONADO: Set do email
 
         assertEquals(2L, memberDTO.getId());
         assertEquals("Updated DTO Name", memberDTO.getName());
         assertEquals(35, memberDTO.getAge());
-        assertEquals("updated.dto@example.com", memberDTO.getEmail());
+        assertEquals("updated.dto@example.com", memberDTO.getEmail()); // ADICIONADO: Verificação do email
     }
 
     @Test
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
-        MemberDTO memberDTO = new MemberDTO(3L, "All Args Member", 40, "allargs@example.com");
+        // ADICIONADO: Email no construtor completo
+        MemberDTO memberDTO = new MemberDTO(3L, "All Args Member", 40, "allargs.dto@example.com", 1L);
 
         assertEquals(3L, memberDTO.getId());
         assertEquals("All Args Member", memberDTO.getName());
         assertEquals(40, memberDTO.getAge());
-        assertEquals("allargs@example.com", memberDTO.getEmail());
+        assertEquals("allargs.dto@example.com", memberDTO.getEmail()); // ADICIONADO: Verificação do email
     }
 
     @Test
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         MemberDTO memberDTO = createSampleMemberDTO();
-        String expectedToStringPart = "MemberDTO(id=1, name=Member DTO Name, age=28, email=dto.member@example.com)";
+        // ADICIONADO: Email na string esperada do toString
+        String expectedToStringPart = "MemberDTO(id=1, name=Member DTO Name, age=28, email=member.dto@example.com)";
         assertTrue(memberDTO.toString().contains(expectedToStringPart));
     }
 
@@ -67,8 +69,15 @@ class MemberDTOTest {
     @DisplayName("Should compare two equal MemberDTO objects with equals and hashCode")
     void shouldCompareEqualMemberDTOs() {
         MemberDTO dto1 = createSampleMemberDTO();
-        MemberDTO dto2 = createSampleMemberDTO();
-        MemberDTO dto3 = MemberDTO.builder().id(99L).name("Different").build();
+        // Crie dto2 da mesma forma que dto1 para garantir igualdade
+        MemberDTO dto2 = MemberDTO.builder()
+                .id(1L)
+                .name("Member DTO Name")
+                .age(28)
+                .email("member.dto@example.com")
+                .build();
+
+        MemberDTO dto3 = MemberDTO.builder().id(99L).name("Different").age(100).email("diff@example.com").build();
 
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());

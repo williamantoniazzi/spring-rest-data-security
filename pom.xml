@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.3</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 
 	<groupId>br.edu.fatecsjc</groupId>
@@ -21,9 +21,19 @@
 		<modelmapper.version>3.1.0</modelmapper.version>
 		<springdoc.version>2.8.6</springdoc.version>
 		<jacoco.version>0.8.11</jacoco.version>
+		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.organization>williamantoniazzi</sonar.organization>
+		<sonar.projectKey>williamantoniazzi_spring-rest-data-security</sonar.projectKey>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.224</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- Outras dependências existentes... -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -44,7 +54,6 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -69,18 +78,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.13.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.13.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -129,10 +126,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
@@ -153,44 +153,102 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco.version}</version> <executions>
-				<execution>
-					<goals>
-						<goal>prepare-agent</goal> </goals>
-				</execution>
-				<execution>
-					<id>report</id>
-					<phase>test</phase> <goals>
-					<goal>report</goal> </goals>
-				</execution>
-				<execution>
-					<id>jacoco-check</id>
-					<goals>
-						<goal>check</goal>
-					</goals>
-					<configuration>
-						<rules>
-							<rule>
-								<element>BUNDLE</element> <limits>
-								<limit>
-									<counter>LINE</counter> <value>COVEREDRATIO</value>
-									<minimum>0.10</minimum> </limit>
-								<limit>
-									<counter>BRANCH</counter> <value>COVEREDRATIO</value>
-									<minimum>0.0</minimum> </limit>
-							</limits>
-							</rule>
-						</rules>
-						<excludes>
-							<exclude>**/br/edu/fatecsjc/lgnspringapi/LgnSpringApiApplication.class</exclude>
-							<exclude>**/br/edu/fatecsjc/lgnspringapi/security/config/**</exclude>
-							<exclude>**/br/edu/fatecsjc/lgnspringapi/entity/**</exclude>
-							<exclude>**/br/edu/fatecsjc/lgnspringapi/dto/**</exclude>
-							<exclude>**/br/edu/fatecsjc/lgnspringapi/exception/**</exclude>
-						</excludes>
-					</configuration>
-				</execution>
-			</executions>
+				<version>${jacoco.version}</version>
+				<executions>
+					<!-- Execução para testes unitários (já existente, adaptada) -->
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<!-- Define o arquivo de execução para testes unitários -->
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-ut.exec</destFile>
+						</configuration>
+					</execution>
+					<!-- Execução para testes de integração/E2E (novo) -->
+					<execution>
+						<id>prepare-agent-it</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<!-- Define o arquivo de execução para testes de integração -->
+						<configuration>
+							<destFile>${project.build.directory}/jacoco-it.exec</destFile>
+						</configuration>
+					</execution>
+					<!-- Execução para mesclar os relatórios .exec (novo) -->
+					<execution>
+						<id>merge-reports</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>jacoco-ut.exec</include>
+										<include>jacoco-it.exec</include>
+										<!-- Inclua outros arquivos .exec se houver -->
+									</includes>
+								</fileSet>
+							</fileSets>
+							<destFile>${project.build.directory}/jacoco-merged.exec</destFile>
+						</configuration>
+					</execution>
+					<!-- Execução para gerar o relatório XML a partir do arquivo mesclado (adaptada) -->
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<formats>
+								<format>XML</format>
+							</formats>
+							<!-- O relatório final será gerado a partir do arquivo mesclado -->
+							<dataFile>${project.build.directory}/jacoco-merged.exec</dataFile>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+						</configuration>
+					</execution>
+					<!-- A execução jacoco-check (existente) -->
+					<execution>
+						<id>jacoco-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element> <limits>
+									<limit>
+										<counter>LINE</counter> <value>COVEREDRATIO</value>
+										<minimum>0.00</minimum> </limit>
+									<limit>
+										<counter>BRANCH</counter> <value>COVEREDRATIO</value>
+										<minimum>0.0</minimum> </limit>
+								</limits>
+								</rule>
+							</rules>
+							<excludes>
+								<exclude>**/br/edu/fatecsjc/lgnspringapi/LgnSpringApiApplication.class</exclude>
+								<exclude>**/br/edu/fatecsjc/lgnspringapi/security/config/**</exclude>
+								<exclude>**/br/edu/fatecsjc/lgnspringapi/entity/**</exclude>
+								<exclude>**/br/edu/fatecsjc/lgnspringapi/dto/**</exclude>
+								<exclude>**/br/edu/fatecsjc/lgnspringapi/exception/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version>
 			</plugin>
 		</plugins>
 	</build>

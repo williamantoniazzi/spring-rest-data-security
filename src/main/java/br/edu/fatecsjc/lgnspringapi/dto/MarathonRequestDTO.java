@@ -35,4 +35,11 @@ public class MarathonRequestDTO {
                 .score(this.score)
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return "MarathonRequestDTO(name=" + identification +
+                ", weight=" + weight +
+                ", score=" + score + ")";
+    }
 }

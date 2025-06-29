@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
-import org.modelmapper.TypeToken;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.Provider;
 
 import java.util.ArrayList;
@@ -22,142 +22,61 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Habilita o Mockito para JUnit 5
+@ExtendWith(MockitoExtension.class)
 @DisplayName("GroupConverter Tests")
 class GroupConverterTest {
 
     @Mock
-    private ModelMapper modelMapper; // Mock do ModelMapper
-    @Mock
-    private TypeMap<GroupDTO, Group> typeMapMock; // Mock para o TypeMap
+    private ModelMapper modelMapper;
 
     @InjectMocks
-    private GroupConverter groupConverter; // A classe que estamos testando, com mocks injetados
+    private GroupConverter groupConverter;
 
     private Group sampleGroupEntity;
     private GroupDTO sampleGroupDTO;
-    private Member sampleMemberEntity1;
-    private Member sampleMemberEntity2;
-    private MemberDTO sampleMemberDTO1;
-    private MemberDTO sampleMemberDTO2;
+    private Member sampleMemberEntity;
+    private MemberDTO sampleMemberDTO;
 
     @BeforeEach
     void setUp() {
-        // Inicializa dados de exemplo para os testes
-        sampleMemberEntity1 = Member.builder().id(1L).name("Member A").email("a@test.com").build();
-        sampleMemberEntity2 = Member.builder().id(2L).name("Member B").email("b@test.com").build();
         sampleGroupEntity = Group.builder()
-                .id(10L)
-                .name("Entity Group")
-                .members(new ArrayList<>(List.of(sampleMemberEntity1, sampleMemberEntity2)))
+                .id(1L)
+                .name("Sample Group")
+                .members(new ArrayList<>())
                 .build();
 
-        sampleMemberDTO1 = MemberDTO.builder().id(101L).name("DTO Member X").email("x@test.com").build();
-        sampleMemberDTO2 = MemberDTO.builder().id(102L).name("DTO Member Y").email("y@test.com").build();
+        sampleMemberEntity = Member.builder()
+                .id(101L)
+                .name("Sample Member")
+                .email("member@example.com")
+                .age(30)
+                .group(sampleGroupEntity)
+                .build();
+        sampleGroupEntity.getMembers().add(sampleMemberEntity);
+
         sampleGroupDTO = GroupDTO.builder()
-                .id(100L)
-                .name("DTO Group")
-                .members(new ArrayList<>(List.of(sampleMemberDTO1, sampleMemberDTO2)))
+                .id(1L)
+                .name("Sample Group")
+                .members(new ArrayList<>())
                 .build();
 
-        // Configuração inicial para o modelMapper que é usado em convertToEntity(GroupDTO dto)
-        // e convertToEntity(GroupDTO dto, Group entity)
-        when(modelMapper.createTypeMap(GroupDTO.class, Group.class)).thenReturn(typeMapMock);
-        doNothing().when(typeMapMock).addMappings(any());
-        doNothing().when(typeMapMock).setProvider(any(Provider.class)); // Captura qualquer Provider
-    }
+        sampleMemberDTO = MemberDTO.builder()
+                .id(101L)
+                .name("Sample Member")
+                .email("member@example.com")
+                .age(30)
+                .groupId(1L)
+                .build();
+        sampleGroupDTO.getMembers().add(sampleMemberDTO);
 
-    @Test
-    @DisplayName("convertToEntity(GroupDTO dto) should map DTO to new Entity correctly")
-    void convertToEntity_shouldMapDtoToNewEntityCorrectly() {
-        // Mock do comportamento de mapeamento do ModelMapper para o primeiro método convertToEntity
-        when(modelMapper.map(sampleGroupDTO, Group.class)).thenReturn(
-                Group.builder()
-                        .name(sampleGroupDTO.getName())
-                        .members(new ArrayList<>(List.of(
-                                Member.builder().id(sampleMemberDTO1.getId()).name(sampleMemberDTO1.getName()).email(sampleMemberDTO1.getEmail()).build(),
-                                Member.builder().id(sampleMemberDTO2.getId()).name(sampleMemberDTO2.getName()).email(sampleMemberDTO2.getEmail()).build()
-                        )))
-                        .build()
-        );
-
-        Group result = groupConverter.convertToEntity(sampleGroupDTO);
-
-        assertNotNull(result);
-        assertNull(result.getId()); // ID deve ser nulo pois skipamos no mapeamento
-        assertEquals(sampleGroupDTO.getName(), result.getName());
-        assertNotNull(result.getMembers());
-        assertEquals(2, result.getMembers().size());
-
-        // Verifica se o group foi setado em cada membro
-        result.getMembers().forEach(member -> assertEquals(result, member.getGroup()));
-
-        // Verifica que o ModelMapper foi chamado corretamente
-        verify(modelMapper, times(1)).createTypeMap(GroupDTO.class, Group.class);
-        verify(modelMapper, times(1)).map(sampleGroupDTO, Group.class);
-    }
-
-    @Test
-    @DisplayName("convertToEntity(GroupDTO dto, Group entity) should update existing Entity correctly")
-    void convertToEntity_shouldUpdateExistingEntityCorrectly() {
-        Group existingEntity = Group.builder().id(99L).name("Existing Group").members(new ArrayList<>()).build();
-
-        // Mock do comportamento de mapeamento do ModelMapper para o segundo método convertToEntity
-        // Ele deve retornar uma NOVA instância com base no DTO
-        when(modelMapper.map(sampleGroupDTO, Group.class)).thenReturn(
-                Group.builder()
-                        .name(sampleGroupDTO.getName())
-                        .id(existingEntity.getId()) // Mantém o ID da entidade existente
-                        .members(new ArrayList<>(List.of(
-                                Member.builder().id(sampleMemberDTO1.getId()).name(sampleMemberDTO1.getName()).email(sampleMemberDTO1.getEmail()).build()
-                        )))
-                        .build()
-        );
-
-        // O GroupConverter usa um Provider para a entidade existente, mas o map do ModelMapper ainda cria uma nova instância
-        // A lógica do GroupConverter sobrescreve o mapeamento, o que é um pouco peculiar, mas vamos testar o que ele faz.
-        // O `Provider<Group> groupProvider = p -> entity;` faz com que o ModelMapper reutilize a instância existente
-        // quando `modelMapper.map(dto, Group.class)` é chamado.
-
-        // Simula o comportamento do ModelMapper quando o provider é usado
-        when(modelMapper.map(any(GroupDTO.class), eq(Group.class))).thenReturn(existingEntity); // Retorna a entidade existente
-
-        Group result = groupConverter.convertToEntity(sampleGroupDTO, existingEntity);
-
-        assertNotNull(result);
-        assertEquals(existingEntity.getId(), result.getId()); // ID deve ser mantido
-        assertEquals(sampleGroupDTO.getName(), result.getName());
-        assertNotNull(result.getMembers());
-        // O mapeamento do ModelMapper padrão não mesclaria listas facilmente,
-        // mas o seu código faz um novo mapeamento e seta o grupo.
-        // Precisamos mockar o que `modelMapper.map` realmente retorna quando a entidade existente é passada.
-        assertEquals(sampleGroupDTO.getMembers().size(), result.getMembers().size()); // Assumindo que os membros do DTO são mapeados
-
-        result.getMembers().forEach(member -> assertEquals(result, member.getGroup()));
-
-        verify(modelMapper, times(2)).createTypeMap(GroupDTO.class, Group.class); // Chamado 2x (um por método)
-        verify(modelMapper, times(1)).map(sampleGroupDTO, Group.class); // Chama 1x (para a entidade existente)
-    }
-
-
-    @Test
-    @DisplayName("convertToDto should map Entity to DTO correctly")
-    void convertToDto_shouldMapEntityToDtoCorrectly() {
-        // Mock do comportamento de mapeamento do ModelMapper
-        when(modelMapper.map(sampleGroupEntity, GroupDTO.class)).thenReturn(sampleGroupDTO);
-
-        GroupDTO result = groupConverter.convertToDto(sampleGroupEntity);
-
-        assertNotNull(result);
-        assertEquals(sampleGroupDTO.getId(), result.getId());
-        assertEquals(sampleGroupDTO.getName(), result.getName());
-        assertNotNull(result.getMembers());
-        assertEquals(sampleGroupDTO.getMembers().size(), result.getMembers().size());
-        assertEquals(sampleMemberDTO1.getName(), result.getMembers().get(0).getName());
-
-        verify(modelMapper, times(1)).map(sampleGroupEntity, GroupDTO.class);
+        // Mock do TypeMap para evitar NullPointerException
+        TypeMap<GroupDTO, Group> typeMap = mock(TypeMap.class);
+        lenient().when(modelMapper.createTypeMap(GroupDTO.class, Group.class)).thenReturn(typeMap);
+        lenient().when(typeMap.addMappings(any(PropertyMap.class))).thenReturn(typeMap);
+        lenient().when(typeMap.setProvider(any(Provider.class))).thenReturn(typeMap);
     }
 
     @Test
@@ -166,8 +85,7 @@ class GroupConverterTest {
         List<GroupDTO> dtoList = Collections.singletonList(sampleGroupDTO);
         List<Group> expectedEntities = Collections.singletonList(sampleGroupEntity);
 
-        // Mock do comportamento de mapeamento de lista do ModelMapper
-        when(modelMapper.map(eq(dtoList), any(TypeToken.class))).thenReturn(expectedEntities);
+        when(modelMapper.map(eq(dtoList), any(java.lang.reflect.Type.class))).thenReturn(expectedEntities);
 
         List<Group> result = groupConverter.convertToEntity(dtoList);
 
@@ -177,11 +95,9 @@ class GroupConverterTest {
         assertEquals(sampleGroupEntity.getId(), result.get(0).getId());
         assertEquals(sampleGroupEntity.getName(), result.get(0).getName());
         assertEquals(sampleGroupEntity.getMembers().size(), result.get(0).getMembers().size());
-
-        // Verifica se o group foi setado em cada membro nas entidades convertidas
         result.get(0).getMembers().forEach(member -> assertEquals(result.get(0), member.getGroup()));
 
-        verify(modelMapper, times(1)).map(eq(dtoList), any(TypeToken.class));
+        verify(modelMapper, times(1)).map(eq(dtoList), any(java.lang.reflect.Type.class));
     }
 
     @Test
@@ -190,8 +106,7 @@ class GroupConverterTest {
         List<Group> entityList = Collections.singletonList(sampleGroupEntity);
         List<GroupDTO> expectedDTOs = Collections.singletonList(sampleGroupDTO);
 
-        // Mock do comportamento de mapeamento de lista do ModelMapper
-        when(modelMapper.map(eq(entityList), any(TypeToken.class))).thenReturn(expectedDTOs);
+        when(modelMapper.map(eq(entityList), any(java.lang.reflect.Type.class))).thenReturn(expectedDTOs);
 
         List<GroupDTO> result = groupConverter.convertToDto(entityList);
 
@@ -202,6 +117,68 @@ class GroupConverterTest {
         assertEquals(sampleGroupDTO.getName(), result.get(0).getName());
         assertEquals(sampleGroupDTO.getMembers().size(), result.get(0).getMembers().size());
 
-        verify(modelMapper, times(1)).map(eq(entityList), any(TypeToken.class));
+        verify(modelMapper, times(1)).map(eq(entityList), any(java.lang.reflect.Type.class));
+    }
+
+    @Test
+    @DisplayName("convertToEntity(GroupDTO dto) should map DTO to Entity correctly")
+    void convertToEntity_shouldMapDtoToEntityCorrectly() {
+        Group expectedEntity = sampleGroupEntity;
+
+        when(modelMapper.map(eq(sampleGroupDTO), eq(Group.class))).thenReturn(expectedEntity);
+
+        Group result = groupConverter.convertToEntity(sampleGroupDTO);
+
+        assertNotNull(result);
+        assertEquals(expectedEntity.getId(), result.getId());
+        assertEquals(expectedEntity.getName(), result.getName());
+        assertEquals(expectedEntity.getMembers().size(), result.getMembers().size());
+        result.getMembers().forEach(member -> assertEquals(result, member.getGroup()));
+
+        verify(modelMapper, atLeastOnce()).createTypeMap(GroupDTO.class, Group.class);
+        verify(modelMapper, times(1)).map(eq(sampleGroupDTO), eq(Group.class));
+    }
+
+    @Test
+    @DisplayName("convertToEntity(GroupDTO dto, Group entity) should update existing entity correctly")
+    void convertToEntityWithExistingEntity_shouldUpdateExistingEntityCorrectly() {
+        Group existingEntity = Group.builder().id(99L).name("Existing Group").members(new ArrayList<>()).build();
+        GroupDTO dtoWithUpdates = GroupDTO.builder().id(99L).name("Updated Group").members(new ArrayList<>()).build();
+
+        // Cria uma cópia atualizada para simular o retorno do ModelMapper
+        Group updatedEntity = Group.builder()
+                .id(existingEntity.getId())
+                .name(dtoWithUpdates.getName())
+                .members(new ArrayList<>())
+                .build();
+
+        when(modelMapper.map(eq(dtoWithUpdates), eq(Group.class))).thenReturn(updatedEntity);
+
+        Group result = groupConverter.convertToEntity(dtoWithUpdates, existingEntity);
+
+        assertNotNull(result);
+        assertEquals(existingEntity.getId(), result.getId());
+        assertEquals("Updated Group", result.getName());
+        assertEquals(0, result.getMembers().size());
+
+        verify(modelMapper, atLeastOnce()).createTypeMap(GroupDTO.class, Group.class);
+        verify(modelMapper, times(1)).map(eq(dtoWithUpdates), eq(Group.class));
+    }
+
+    @Test
+    @DisplayName("convertToDto(Group entity) should map Entity to DTO correctly")
+    void convertToDto_shouldMapEntityToDtoCorrectly() {
+        GroupDTO expectedDTO = sampleGroupDTO;
+
+        when(modelMapper.map(eq(sampleGroupEntity), eq(GroupDTO.class))).thenReturn(expectedDTO);
+
+        GroupDTO result = groupConverter.convertToDto(sampleGroupEntity);
+
+        assertNotNull(result);
+        assertEquals(expectedDTO.getId(), result.getId());
+        assertEquals(expectedDTO.getName(), result.getName());
+        assertEquals(expectedDTO.getMembers().size(), result.getMembers().size());
+
+        verify(modelMapper, times(1)).map(eq(sampleGroupEntity), eq(GroupDTO.class));
     }
 }

@@ -1,0 +1,37 @@
+# Utilização do sonarcloud.io, sendo assim este arquivo de configuração será desativado
+# Será utilizado CI para adicionar as informações para cloud.
+# referência: spring-rest-data-security\.github\workflows\sonarci.yml
+# https://docs.sonarsource.com/sonarqube-cloud/enriching/test-coverage/java-test-coverage/
+
+#sonar.projectKey=williamantoniazzi_spring-rest-data-security
+#sonar.organization=williamantoniazzi
+#sonar.host.url=https://sonarcloud.io
+#sonar.login=${SONAR_TOKEN}
+
+# Path to source code
+#sonar.sources=src/main/java
+
+# Path to tests
+#sonar.tests=src/test/java
+
+# Coverage reports
+#sonar.java.coveragePlugin=jacoco
+#sonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+
+# Configurações do SonarQube (Self-Hosted).
+# Must be unique in a given SonarQube instance
+#sonar.projectKey=br.edu.fatec:sprint-boot-sample
+#sonar.projectName=Spring Boot Sample
+#sonar.projectVersion=1.0
+ 
+# Path is relative to the sonar-project.properties file.
+# Replace "\" by "/" on Windows.
+# This property is optional if sonar.modules is set. 
+#sonar.sources=.
+# sonar.java.binaries=./target
+ 
+# Encoding of the source code. Default is default system encoding
+#sonar.sourceEncoding=UTF-8
+
+#sonar.token=sqa_87525a4018bd47ec3d4f4b9d8fe371ea22b9ecf7
+#sonar.host.url=http://localhost:9001

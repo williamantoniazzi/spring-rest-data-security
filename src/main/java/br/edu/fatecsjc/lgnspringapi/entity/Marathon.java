@@ -1,14 +1,12 @@
 package br.edu.fatecsjc.lgnspringapi.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter // Anotação do Lombok: Gera automaticamente os métodos 'get' para todos os atributos da classe (ex: getId(), getIdentification()).
-// **Função:** Permite que outras partes do código leiam os valores dos atributos desta entidade.
-@Setter // Anotação do Lombok: Gera automaticamente os métodos 'set' para todos os atributos da classe (ex: setId(Long id), setIdentification(String identification)).
-// **Função:** Permite que outras partes do código modifiquem os valores dos atributos desta entidade.
-@ToString // Anotação do Lombok: Gera automaticamente o método 'toString()' para a classe.
-// **Função:** Produz uma representação em string do objeto, útil para depuração e logs.
+@Data
 @AllArgsConstructor // Anotação do Lombok: Gera um construtor com todos os atributos da classe como argumentos.
 // **Função:** Facilita a criação de uma nova instância de 'Marathon' fornecendo todos os seus valores de uma vez.
 @NoArgsConstructor // Anotação do Lombok: Gera um construtor sem argumentos (vazio).
@@ -28,8 +26,9 @@ public class Marathon {
     @SequenceGenerator(initialValue = 1, allocationSize = 1, name = "marathonsidgen", sequenceName = "marathons_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "marathonsidgen")
     private Long id;
-
     private String identification;
     private Double weight;
     private Double score;
+
+
 }

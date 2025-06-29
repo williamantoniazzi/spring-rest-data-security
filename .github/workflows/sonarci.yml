@@ -1,0 +1,64 @@
+name: Java CI with Maven and SonarCloud
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  build-test-and-analyze-all:
+    name: Build, Test (unitários e E2E), and SonarCloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configure Maven Cache # Opcional: Melhora a performance do build com cache do Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Cache SonarCloud packages # Opcional: Cache para pacotes do SonarCloud, pode agilizar execuções futuras
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: |
+            ${{ runner.os }}-sonar-
+
+        # PASSO 1: Build, Testes Unitários/Integração (com H2)
+      - name: Build and Run Unit/Integration Tests (with H2 Profile)
+        run: mvn -B clean verify -Dspring.profiles.active=test
+
+      # PASSO 2: Rodar Testes E2E (com o perfil 'system-tests')
+      # ESTE PASSO EXIGE QUE O BANCO DE DADOS EXTERNO ESTEJA DISPONÍVEL
+      # OU QUE SEUS TESTES E2E USAM Testcontainers/H2 TAMBÉM.
+      - name: Run E2E Tests
+        run: mvn -B verify -Psystem-tests -Dspring.profiles.active=test
+
+
+      - name: SonarCloud Scan
+        env:
+          # Define o token do SonarCloud como uma variável de ambiente.
+          # É crucial que este seja um GitHub Secret para segurança.
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          # O SonarCloud enviará o relatório de cobertura JaCoCo consolidado,
+          # que incluirá a cobertura de todos os testes (unitários, integração, E2E)
+          # executados com o H2.
+          mvn -B sonar:sonar \
+            -Dsonar.projectKey=williamantoniazzi_spring-rest-data-security \
+            -Dsonar.organization=williamantoniazzi \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            # Se você usar um arquivo .exec consolidado, o SonarQube irá gerá-lo.
+            # -Dsonar.jacoco.reportPaths=target/jacoco-merged.exec # Use este se houver um .exec consolidado

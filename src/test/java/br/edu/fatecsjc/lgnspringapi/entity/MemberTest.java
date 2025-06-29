@@ -11,18 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Member Entity Tests")
 class MemberTest {
 
-    // Helper para criar uma instância simples de Group (entidade)
     private Group createSampleGroup(Long id, String name) {
         return Group.builder().id(id).name(name).build();
     }
 
-    // Helper para criar uma instância simples de Marathon (entidade)
-    // Assumindo que você tem uma entidade Marathon, caso contrário, crie um stub simples.
     private Marathon createSampleMarathon(Long id, String name) {
-        return Marathon.builder().id(id).name(name).build();
+        return Marathon.builder().id(id).identification(name).build();
     }
 
-    // Helper para criar uma instância de Member para reutilização
     private Member createSampleMember() {
         Group group = createSampleGroup(1L, "Group A");
         List<Marathon> marathons = new ArrayList<>();
@@ -54,13 +50,13 @@ class MemberTest {
         assertEquals("Group A", member.getGroup().getName());
         assertNotNull(member.getMarathons());
         assertEquals(2, member.getMarathons().size());
-        assertEquals("Marathon X", member.getMarathons().get(0).getName());
+        assertEquals("Marathon X", member.getMarathons().get(0).getIdentification());
     }
 
     @Test
     @DisplayName("Should set new values using setters and verify")
     void shouldSetNewValuesUsingSetters() {
-        Member member = new Member(); // Usa o construtor NoArgsConstructor
+        Member member = new Member();
 
         member.setId(2L);
         member.setName("Jane Smith");
@@ -81,7 +77,7 @@ class MemberTest {
         assertEquals("Group B", member.getGroup().getName());
         assertNotNull(member.getMarathons());
         assertEquals(1, member.getMarathons().size());
-        assertEquals("Marathon Z", member.getMarathons().get(0).getName());
+        assertEquals("Marathon Z", member.getMarathons().get(0).getIdentification());
     }
 
     @Test
@@ -107,12 +103,15 @@ class MemberTest {
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         Member member = createSampleMember();
-        // Verifica se o toString não é nulo e contém partes esperadas.
-        // Lembre-se que Marathon tem @ToString.Exclude, então não deve aparecer completo.
-        String expectedToStringPart = "Member(id=1, name=John Doe, age=30, email=john.doe@example.com, group=Group(id=1, name=Group A)";
-        assertTrue(member.toString().contains(expectedToStringPart));
-        // Para marathons, deve conter a referência da coleção, mas não o conteúdo detalhado devido ao @ToString.Exclude
-        assertTrue(member.toString().contains("marathons=[Marathon(id=101)")); // Ou algo similar, dependendo do toString padrão do Marathon
+        String toStringResult = member.toString();
+        System.out.println(toStringResult);
+
+        assertTrue(toStringResult.contains("Member(id=1, name=John Doe"));
+        assertTrue(toStringResult.contains("age=30"));
+        assertTrue(toStringResult.contains("email=john.doe@example.com"));
+        assertTrue(toStringResult.contains("group=Group(id=1, name=Group A"));
+        assertTrue(toStringResult.contains("marathons=[Marathon(id=101, identification=Marathon X"));
+        assertTrue(toStringResult.contains("Marathon(id=102, identification=Marathon Y"));
     }
 
     @Test
@@ -126,8 +125,8 @@ class MemberTest {
                 .name("Different Member")
                 .build();
 
-        assertEquals(member1, member2); // equals()
-        assertEquals(member1.hashCode(), member2.hashCode()); // hashCode()
+        assertEquals(member1, member2);
+        assertEquals(member1.hashCode(), member2.hashCode());
 
         assertNotEquals(member1, member3);
         assertNotEquals(member1.hashCode(), member3.hashCode());
