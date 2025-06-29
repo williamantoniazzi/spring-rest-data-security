@@ -61,7 +61,7 @@ class MarathonServiceTest {
     @DisplayName("Should create a marathon successfully")
     void shouldCreateMarathonSuccessfully() {
         // Given
-        Marathon marathonToSave = sampleRequestDTO.toEntity(); // Entity without ID
+        Marathon marathonToSave = sampleRequestDTO.toEntity();// Entity without ID
         Marathon savedMarathon = sampleMarathon; // Entity with ID
 
         when(marathonRepository.save(any(Marathon.class))).thenReturn(savedMarathon);

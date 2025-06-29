@@ -14,19 +14,25 @@ import java.util.List;
 
 @Service
 public class GroupService {
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupConverter groupConverter;
+
+    private final GroupRepository groupRepository;
+    private final MemberRepository memberRepository;
+    private final GroupConverter groupConverter;
+
+    public GroupService(GroupRepository groupRepository, MemberRepository memberRepository, GroupConverter groupConverter) {
+        this.groupRepository = groupRepository;
+        this.memberRepository = memberRepository;
+        this.groupConverter = groupConverter;
+    }
 
     public List<GroupDTO> getAll() {
         return groupConverter.convertToDto(groupRepository.findAll());
     }
 
     public GroupDTO findById(Long id) {
-        return groupConverter.convertToDto(groupRepository.findById(id).get());
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Grupo não encontrado com id: " + id));
+        return groupConverter.convertToDto(group);
     }
 
     @Transactional

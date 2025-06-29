@@ -28,20 +28,26 @@ public class GroupResponseDTO {
         if (group == null) {
             return null;
         }
+        List<MemberResponseDTO> memberDTOs;
+        if (group.getMembers() == null) {
+            memberDTOs = null;
+        } else if (group.getMembers().isEmpty()) {
+            memberDTOs = java.util.Collections.emptyList();
+        } else {
+            memberDTOs = group.getMembers().stream()
+                    .map(MemberResponseDTO::fromEntity)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
         return GroupResponseDTO.builder()
                 .id(group.getId())
                 .name(group.getName())
                 .organizationId(group.getOrganization() != null ? group.getOrganization().getId() : null)
                 .organizationName(group.getOrganization() != null ? group.getOrganization().getName() : "N/A")
-                .members(group.getMembers() == null
-                        ? null
-                        : group.getMembers().isEmpty()
-                        ? java.util.Collections.emptyList()
-                        : group.getMembers().stream()
-                        .map(MemberResponseDTO::fromEntity)
-                        .collect(java.util.stream.Collectors.toList()))
+                .members(memberDTOs)
                 .build();
     }
+
 
     @Override
     public String toString() {

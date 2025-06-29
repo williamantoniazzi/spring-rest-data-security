@@ -184,9 +184,7 @@ class MemberRequestDTOTest {
     void toEntityShouldThrowExceptionWhenGroupIsNull() {
         MemberRequestDTO dto = createSampleMemberRequestDTO(); // Usando o DTO com email
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            dto.toEntity(null, List.of());
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> dto.toEntity(null, List.of()));
 
         assertEquals("O grupo não pode ser nulo ao converter MemberRequestDTO para entidade.", exception.getMessage());
     }

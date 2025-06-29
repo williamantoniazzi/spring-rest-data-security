@@ -51,7 +51,7 @@ public class MarathonResource { // Você pode chamar de MarathonController tamb�
      * @return ResponseEntity com o MarathonResponseDTO da maratona encontrada e status 200 OK.
      * Ou, se a maratona não for encontrada, um 404 Not Found (gerenciado pela exceção no serviço).
      */
-    @GetMapping("/{id}") // Mapeia requisições GET para /api/marathons/{id}
+    @GetMapping("/{id}")
     public ResponseEntity<MarathonResponseDTO> getMarathonById(@PathVariable Long id) {
         // Delega a busca da maratona por ID para a camada de serviço
         MarathonResponseDTO responseDTO = marathonService.getMarathonById(id);
@@ -64,7 +64,7 @@ public class MarathonResource { // Você pode chamar de MarathonController tamb�
      * @param requestDTO DTO com os dados atualizados da maratona.
      * @return ResponseEntity com o MarathonResponseDTO da maratona atualizada e status 200 OK.
      */
-    @PutMapping("/{id}") // Mapeia requisições PUT para /api/marathons/{id}
+    @PutMapping("/{id}")
     public ResponseEntity<MarathonResponseDTO> updateMarathon(
             @PathVariable Long id,
             @Valid @RequestBody MarathonRequestDTO requestDTO) {
@@ -78,7 +78,7 @@ public class MarathonResource { // Você pode chamar de MarathonController tamb�
      * @param id O ID da maratona a ser deletada (extraído da URL).
      * @return ResponseEntity sem corpo e status 204 No Content.
      */
-    @DeleteMapping("/{id}") // Mapeia requisições DELETE para /api/marathons/{id}
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMarathon(@PathVariable Long id) {
         // Delega a exclusão da maratona para a camada de serviço
         marathonService.deleteMarathon(id);

@@ -47,7 +47,7 @@ public class MarathonService {
         // Converte cada entidade para um DTO de resposta e coleta em uma lista
         return marathons.stream()
                 .map(MarathonResponseDTO::fromEntity)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).stream().toList();
     }
 
     /**
