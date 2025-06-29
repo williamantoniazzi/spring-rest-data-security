@@ -92,7 +92,7 @@ class GroupTest {
         List<Member> members = new ArrayList<>();
         members.add(createSampleMember(301L, "Member D", "memberd@example.com"));
 
-        Group group = new Group(3L, "Grupo AllArgs", org, members);
+        Group group = new Group(3L, "Grupo AllArgs", members, org);
 
         assertEquals(3L, group.getId());
         assertEquals("Grupo AllArgs", group.getName());

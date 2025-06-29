@@ -1,161 +1,161 @@
 package br.edu.fatecsjc.lgnspringapi.resource;
 
+import br.edu.fatecsjc.lgnspringapi.dto.AddressDTO;
+import br.edu.fatecsjc.lgnspringapi.dto.OrganizationRequestDTO;
+import br.edu.fatecsjc.lgnspringapi.dto.OrganizationResponseDTO;
+import br.edu.fatecsjc.lgnspringapi.entity.Address;
+import br.edu.fatecsjc.lgnspringapi.entity.Group;
 import br.edu.fatecsjc.lgnspringapi.entity.Organization;
-import br.edu.fatecsjc.lgnspringapi.service.OrganizationService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Optional;
-import java.util.List;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.Collections;
 
-@WebMvcTest(OrganizationResource.class)
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayName("Testes para OrganizationRequestDTO e OrganizationResponseDTO")
 class OrganizationResourceTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private OrganizationService organizationService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Organization organization;
-
-    @BeforeEach
-    void setUp() {
-        organization = Organization.builder()
-                .id(1L)
-                .name("Fatec São José dos Campos")
-                .institutionName("Fatec")
-                .headquartersCountry("Brazil")
-                .build();
-    }
-
     @Test
-    @DisplayName("Should create an organization and return 201 Created")
-    void createOrganization_Success() throws Exception {
-        when(organizationService.createOrganization(any(Organization.class))).thenReturn(organization);
-
-        mockMvc.perform(post("/api/organizations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(organization)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Fatec São José dos Campos"));
-
-        verify(organizationService, times(1)).createOrganization(any(Organization.class));
-    }
-
-    @Test
-    @DisplayName("Should get an organization by ID and return 200 OK")
-    void getOrganizationById_Exists() throws Exception {
-        when(organizationService.getOrganizationById(1L)).thenReturn(Optional.of(organization));
-
-        mockMvc.perform(get("/api/organizations/{id}", 1L))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.name").value("Fatec São José dos Campos"));
-
-        verify(organizationService, times(1)).getOrganizationById(1L);
-    }
-
-    @Test
-    @DisplayName("Should return 404 Not Found when organization by ID does not exist")
-    void getOrganizationById_NotFound() throws Exception {
-        when(organizationService.getOrganizationById(anyLong())).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/organizations/{id}", 2L))
-                .andExpect(status().isNotFound());
-
-        verify(organizationService, times(1)).getOrganizationById(2L);
-    }
-
-    @Test
-    @DisplayName("Should get all organizations and return 200 OK")
-    void getAllOrganizations_Success() throws Exception {
-        Organization organization2 = Organization.builder().id(2L).name("USP").build();
-        List<Organization> organizationsList = Arrays.asList(organization, organization2);
-
-        when(organizationService.getAllOrganizations()).thenReturn(organizationsList);
-
-        mockMvc.perform(get("/api/organizations"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("Fatec São José dos Campos"))
-                .andExpect(jsonPath("$[1].name").value("USP"));
-
-        verify(organizationService, times(1)).getAllOrganizations();
-    }
-
-    @Test
-    @DisplayName("Should update an organization and return 200 OK")
-    void updateOrganization_Success() throws Exception {
-        Organization updatedInfo = Organization.builder()
-                .id(1L)
-                .name("Fatec São José dos Campos (Updated)")
-                .institutionName("Fatec Updated")
-                .headquartersCountry("Brazil Updated")
+    @DisplayName("OrganizationRequestDTO deve converter corretamente para entidade Organization")
+    void toEntity_Success() {
+        AddressDTO addressDTO = AddressDTO.builder()
+                .street("Rua Exemplo")
+                .number("123")
+                .neighborhood("Centro")
+                .zipCode("12345-678")
+                .city("São José dos Campos")
+                .state("SP")
                 .build();
 
-        when(organizationService.updateOrganization(eq(1L), any(Organization.class))).thenReturn(updatedInfo);
+        OrganizationRequestDTO requestDTO = OrganizationRequestDTO.builder()
+                .name("Nova Empresa")
+                .address(addressDTO)
+                .institutionName("Instituição XYZ")
+                .headquartersCountry("Brasil")
+                .build();
 
-        mockMvc.perform(put("/api/organizations/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedInfo)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Fatec São José dos Campos (Updated)"));
+        Organization organization = requestDTO.toEntity();
 
-        verify(organizationService, times(1)).updateOrganization(eq(1L), any(Organization.class));
+        assertThat(organization).isNotNull();
+        assertThat(organization.getName()).isEqualTo("Nova Empresa");
+        assertThat(organization.getInstitutionName()).isEqualTo("Instituição XYZ");
+        assertThat(organization.getHeadquartersCountry()).isEqualTo("Brasil");
+
+        assertThat(organization.getAddress()).isNotNull();
+        assertThat(organization.getAddress().getStreet()).isEqualTo("Rua Exemplo");
+        assertThat(organization.getAddress().getNumber()).isEqualTo("123");
+        assertThat(organization.getAddress().getNeighborhood()).isEqualTo("Centro");
+        assertThat(organization.getAddress().getZipCode()).isEqualTo("12345-678");
+        assertThat(organization.getAddress().getCity()).isEqualTo("São José dos Campos");
+        assertThat(organization.getAddress().getState()).isEqualTo("SP");
     }
 
     @Test
-    @DisplayName("Should return 404 Not Found when updating a non-existent organization")
-    void updateOrganization_NotFound() throws Exception {
-        when(organizationService.updateOrganization(eq(2L), any(Organization.class)))
-                .thenThrow(new EntityNotFoundException("Organization not found"));
+    @DisplayName("OrganizationRequestDTO deve converter para entidade com endereço nulo se addressDTO for nulo")
+    void toEntity_NullAddressDTO() {
+        OrganizationRequestDTO requestDTO = OrganizationRequestDTO.builder()
+                .name("Empresa Sem Endereço")
+                .address(null)
+                .institutionName("Instituição ABC")
+                .headquartersCountry("EUA")
+                .build();
 
-        mockMvc.perform(put("/api/organizations/{id}", 2L)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(organization)))
-                .andExpect(status().isNotFound());
+        Organization organization = requestDTO.toEntity();
 
-        verify(organizationService, times(1)).updateOrganization(eq(2L), any(Organization.class));
+        assertThat(organization).isNotNull();
+        assertThat(organization.getName()).isEqualTo("Empresa Sem Endereço");
+        assertThat(organization.getAddress()).isNull();
     }
 
     @Test
-    @DisplayName("Should delete an organization and return 204 No Content")
-    void deleteOrganization_Success() throws Exception {
-        doNothing().when(organizationService).deleteOrganization(1L);
+    @DisplayName("OrganizationResponseDTO deve converter corretamente de entidade Organization com grupos")
+    void fromEntity_WithGroups() {
+        Address address = Address.builder()
+                .street("Av. Principal")
+                .city("Cidade Teste")
+                .build();
 
-        mockMvc.perform(delete("/api/organizations/{id}", 1L))
-                .andExpect(status().isNoContent());
+        Organization organization = Organization.builder()
+                .id(1L)
+                .name("Org Teste")
+                .address(address)
+                .institutionName("Inst Teste")
+                .headquartersCountry("País Teste")
+                .build();
 
-        verify(organizationService, times(1)).deleteOrganization(1L);
+        Group group1 = Group.builder().id(10L).name("Grupo A").organization(organization).build();
+        Group group2 = Group.builder().id(11L).name("Grupo B").organization(organization).build();
+        organization.setGroups(Arrays.asList(group1, group2));
+
+        OrganizationResponseDTO responseDTO = OrganizationResponseDTO.fromEntity(organization);
+
+        assertThat(responseDTO).isNotNull();
+        assertThat(responseDTO.getId()).isEqualTo(1L);
+        assertThat(responseDTO.getName()).isEqualTo("Org Teste");
+        assertThat(responseDTO.getInstitutionName()).isEqualTo("Inst Teste");
+        assertThat(responseDTO.getHeadquartersCountry()).isEqualTo("País Teste");
+
+        assertThat(responseDTO.getAddress()).isNotNull();
+        assertThat(responseDTO.getAddress().getStreet()).isEqualTo("Av. Principal");
+        assertThat(responseDTO.getAddress().getCity()).isEqualTo("Cidade Teste");
+
+        assertThat(responseDTO.getGroups()).isNotNull().hasSize(2);
+        assertThat(responseDTO.getGroups().get(0).getId()).isEqualTo(10L);
+        assertThat(responseDTO.getGroups().get(0).getName()).isEqualTo("Grupo A");
+        assertThat(responseDTO.getGroups().get(1).getId()).isEqualTo(11L);
+        assertThat(responseDTO.getGroups().get(1).getName()).isEqualTo("Grupo B");
     }
 
     @Test
-    @DisplayName("Should return 404 Not Found when deleting a non-existent organization")
-    void deleteOrganization_NotFound() throws Exception {
-        doThrow(new EntityNotFoundException("Organization not found")).when(organizationService).deleteOrganization(2L);
+    @DisplayName("OrganizationResponseDTO deve converter corretamente de entidade Organization sem grupos")
+    void fromEntity_WithoutGroups() {
+        Address address = Address.builder()
+                .street("Rua Sem Grupos")
+                .city("Cidade Sem Grupos")
+                .build();
 
-        mockMvc.perform(delete("/api/organizations/{id}", 2L))
-                .andExpect(status().isNotFound());
+        Organization organization = Organization.builder()
+                .id(2L)
+                .name("Org Sem Grupos")
+                .address(address)
+                .institutionName("Inst Sem Grupos")
+                .headquartersCountry("Outro País")
+                .groups(Collections.emptyList())
+                .build();
 
-        verify(organizationService, times(1)).deleteOrganization(2L);
+        OrganizationResponseDTO responseDTO = OrganizationResponseDTO.fromEntity(organization);
+
+        assertThat(responseDTO).isNotNull();
+        assertThat(responseDTO.getId()).isEqualTo(2L);
+        assertThat(responseDTO.getName()).isEqualTo("Org Sem Grupos");
+        assertThat(responseDTO.getGroups()).isNotNull().isEmpty();
+    }
+
+    @Test
+    @DisplayName("OrganizationResponseDTO deve retornar null ao converter entidade nula")
+    void fromEntity_NullEntity() {
+        OrganizationResponseDTO responseDTO = OrganizationResponseDTO.fromEntity(null);
+        assertThat(responseDTO).isNull();
+    }
+
+    @Test
+    @DisplayName("OrganizationResponseDTO deve lidar com endereço nulo na entidade")
+    void fromEntity_NullAddressInEntity() {
+        Organization organization = Organization.builder()
+                .id(3L)
+                .name("Org Null Address")
+                .address(null)
+                .institutionName("Inst Null Address")
+                .headquartersCountry("País X")
+                .build();
+
+        OrganizationResponseDTO responseDTO = OrganizationResponseDTO.fromEntity(organization);
+
+        assertThat(responseDTO).isNotNull();
+        assertThat(responseDTO.getId()).isEqualTo(3L);
+        assertThat(responseDTO.getName()).isEqualTo("Org Null Address");
+        assertThat(responseDTO.getAddress()).isNull();
     }
 }

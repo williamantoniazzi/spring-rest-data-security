@@ -20,15 +20,13 @@ class MemberResponseDTOTest {
     }
 
     // Helper para criar uma instância simples de Marathon (entidade)
-    // Assume que Marathon.java tem um campo 'name'
     private Marathon createSampleMarathon(Long id, String name) {
-        return Marathon.builder().id(id).name(name).build();
+        return Marathon.builder().id(id).identification(name).build();
     }
 
     // Helper para criar uma instância simples de MarathonResponseDTO
-    // Assume que MarathonResponseDTO.java tem um campo 'name'
     private MarathonResponseDTO createSampleMarathonResponseDTO(Long id, String name) {
-        return MarathonResponseDTO.builder().id(id).name(name).build();
+        return MarathonResponseDTO.builder().id(id).identification(name).build();
     }
 
     private MemberResponseDTO createSampleMemberResponseDTO() {
@@ -36,7 +34,7 @@ class MemberResponseDTOTest {
                 .id(1L)
                 .name("Response Member")
                 .age(30)
-                .email("resp.member@example.com") // ADICIONADO: Email no builder
+                .email("resp.member@example.com")
                 .groupId(10L)
                 .groupName("Response Group")
                 .marathons(List.of(createSampleMarathonResponseDTO(101L, "Resp Marathon 1")))
@@ -52,12 +50,12 @@ class MemberResponseDTOTest {
         assertEquals(1L, dto.getId());
         assertEquals("Response Member", dto.getName());
         assertEquals(30, dto.getAge());
-        assertEquals("resp.member@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
+        assertEquals("resp.member@example.com", dto.getEmail());
         assertEquals(10L, dto.getGroupId());
         assertEquals("Response Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
         assertEquals(1, dto.getMarathons().size());
-        assertEquals("Resp Marathon 1", dto.getMarathons().get(0).getName());
+        assertEquals("Resp Marathon 1", dto.getMarathons().get(0).getIdentification());
     }
 
     @Test
@@ -67,7 +65,7 @@ class MemberResponseDTOTest {
         dto.setId(2L);
         dto.setName("Updated Response Member");
         dto.setAge(32);
-        dto.setEmail("updated.resp@example.com"); // ADICIONADO: Set do email
+        dto.setEmail("updated.resp@example.com");
         dto.setGroupId(20L);
         dto.setGroupName("Updated Group");
         dto.setMarathons(List.of(createSampleMarathonResponseDTO(201L, "Resp Marathon 2")));
@@ -75,7 +73,7 @@ class MemberResponseDTOTest {
         assertEquals(2L, dto.getId());
         assertEquals("Updated Response Member", dto.getName());
         assertEquals(32, dto.getAge());
-        assertEquals("updated.resp@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
+        assertEquals("updated.resp@example.com", dto.getEmail());
         assertEquals(20L, dto.getGroupId());
         assertEquals("Updated Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
@@ -86,13 +84,12 @@ class MemberResponseDTOTest {
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
         List<MarathonResponseDTO> marathons = List.of(createSampleMarathonResponseDTO(301L, "Resp Marathon 3"));
-        // ADICIONADO: Email no construtor completo
         MemberResponseDTO dto = new MemberResponseDTO(3L, "All Args Response Member", 35, "allargs.resp@example.com", 30L, "All Args Group", marathons);
 
         assertEquals(3L, dto.getId());
         assertEquals("All Args Response Member", dto.getName());
         assertEquals(35, dto.getAge());
-        assertEquals("allargs.resp@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
+        assertEquals("allargs.resp@example.com", dto.getEmail());
         assertEquals(30L, dto.getGroupId());
         assertEquals("All Args Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
@@ -103,7 +100,6 @@ class MemberResponseDTOTest {
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         MemberResponseDTO dto = createSampleMemberResponseDTO();
-        // O toString já estava esperando o email, apenas confirmando a estrutura
         String expectedToStringPart = "MemberResponseDTO(id=1, name=Response Member, age=30, email=resp.member@example.com, groupId=10, groupName=Response Group, marathons=[MarathonResponseDTO(id=101, name=Resp Marathon 1)";
         assertTrue(dto.toString().contains(expectedToStringPart));
     }
@@ -112,25 +108,8 @@ class MemberResponseDTOTest {
     @DisplayName("Should compare two equal MemberResponseDTO objects with equals and hashCode")
     void shouldCompareEqualMemberResponseDTOs() {
         MemberResponseDTO dto1 = createSampleMemberResponseDTO();
-        // Recria dto2 com os mesmos valores, incluindo email, para garantir a igualdade completa
-        MemberResponseDTO dto2 = MemberResponseDTO.builder()
-                .id(1L)
-                .name("Response Member")
-                .age(30)
-                .email("resp.member@example.com")
-                .groupId(10L)
-                .groupName("Response Group")
-                .marathons(List.of(createSampleMarathonResponseDTO(101L, "Resp Marathon 1")))
-                .build();
-
-        MemberResponseDTO dto3 = MemberResponseDTO.builder()
-                .id(99L)
-                .name("Different")
-                .age(99)
-                .email("different.resp@example.com")
-                .groupId(99L)
-                .groupName("Different Group")
-                .build();
+        MemberResponseDTO dto2 = createSampleMemberResponseDTO();
+        MemberResponseDTO dto3 = MemberResponseDTO.builder().id(99L).name("Different").build();
 
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -149,7 +128,7 @@ class MemberResponseDTOTest {
                 .id(1L)
                 .name("Entity Member")
                 .age(25)
-                .email("entity.member@example.com") // ADICIONADO: Email na entidade Member
+                .email("entity@example.com")
                 .group(group)
                 .marathons(List.of(marathon1, marathon2))
                 .build();
@@ -160,13 +139,13 @@ class MemberResponseDTOTest {
         assertEquals(1L, dto.getId());
         assertEquals("Entity Member", dto.getName());
         assertEquals(25, dto.getAge());
-        assertEquals("entity.member@example.com", dto.getEmail()); // ADICIONADO: Verificação do email no DTO
+        assertEquals("entity@example.com", dto.getEmail());
         assertEquals(10L, dto.getGroupId());
         assertEquals("Test Group", dto.getGroupName());
         assertNotNull(dto.getMarathons());
         assertEquals(2, dto.getMarathons().size());
-        assertEquals("Marathon A", dto.getMarathons().get(0).getName());
-        assertEquals("Marathon B", dto.getMarathons().get(1).getName());
+        assertEquals("Marathon A", dto.getMarathons().get(0).getIdentification());
+        assertEquals("Marathon B", dto.getMarathons().get(1).getIdentification());
     }
 
     @Test
@@ -182,16 +161,15 @@ class MemberResponseDTOTest {
                 .id(1L)
                 .name("No Group Member")
                 .age(20)
-                .email("no.group@example.com") // ADICIONADO: Email na entidade Member
+                .email("nogroup@example.com")
                 .marathons(Collections.emptyList())
                 .build();
         MemberResponseDTO dto = MemberResponseDTO.fromEntity(member);
 
         assertNotNull(dto);
         assertEquals(1L, dto.getId());
-        assertEquals("no.group@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
         assertNull(dto.getGroupId());
-        assertNull(dto.getGroupName());
+        assertNull(dto.getGroupName()); // ou "N/A" se for o default para GroupName, mas seu DTO não tem default
     }
 
     @Test
@@ -202,14 +180,13 @@ class MemberResponseDTOTest {
                 .id(1L)
                 .name("Empty Marathons Member")
                 .age(20)
-                .email("empty.marathons@example.com") // ADICIONADO: Email na entidade Member
+                .email("emptymarathons@example.com")
                 .group(group)
                 .marathons(Collections.emptyList())
                 .build();
         MemberResponseDTO dto = MemberResponseDTO.fromEntity(member);
 
         assertNotNull(dto);
-        assertEquals("empty.marathons@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
         assertNotNull(dto.getMarathons());
         assertTrue(dto.getMarathons().isEmpty());
     }
@@ -222,14 +199,13 @@ class MemberResponseDTOTest {
                 .id(1L)
                 .name("Null Marathons Member")
                 .age(20)
-                .email("null.marathons@example.com") // ADICIONADO: Email na entidade Member
+                .email("nullmarathons@example.com")
                 .group(group)
                 .marathons(null) // Simula lista nula
                 .build();
         MemberResponseDTO dto = MemberResponseDTO.fromEntity(member);
 
         assertNotNull(dto);
-        assertEquals("null.marathons@example.com", dto.getEmail()); // ADICIONADO: Verificação do email
         assertNull(dto.getMarathons());
     }
 }

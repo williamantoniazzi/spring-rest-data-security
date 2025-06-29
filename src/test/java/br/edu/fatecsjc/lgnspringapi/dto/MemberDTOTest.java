@@ -48,7 +48,7 @@ class MemberDTOTest {
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
         // ADICIONADO: Email no construtor completo
-        MemberDTO memberDTO = new MemberDTO(3L, "All Args Member", 40, "allargs.dto@example.com");
+        MemberDTO memberDTO = new MemberDTO(3L, "All Args Member", 40, "allargs.dto@example.com", 1L);
 
         assertEquals(3L, memberDTO.getId());
         assertEquals("All Args Member", memberDTO.getName());

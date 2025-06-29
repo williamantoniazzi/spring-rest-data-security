@@ -21,6 +21,7 @@ import java.util.stream.Collectors; // Necessário se for converter uma lista de
 @Builder // Padrão Builder para criação fluida de objetos
 @NoArgsConstructor // Construtor sem argumentos
 @AllArgsConstructor // Construtor com todos os argumentos
+
 public class MemberRequestDTO {
 
     @NotBlank(message = "O nome do membro é obrigatório.") // Garante que o nome não seja vazio
@@ -41,13 +42,6 @@ public class MemberRequestDTO {
     // Opcional, pois um membro pode ser criado sem ter participado de maratonas ainda.
     private List<Long> marathonIds;
 
-    /**
-     * Converte este DTO de requisição em uma entidade Member.
-     * Este método requer que as entidades Group e Marathon correspondentes já tenham sido buscadas do banco de dados.
-     * @param group A entidade Group à qual este membro pertence.
-     * @param marathons Uma lista de entidades Marathon das quais este membro participou. Pode ser nula ou vazia.
-     * @return Uma nova instância da entidade Member.
-     */
     public Member toEntity(Group group, List<Marathon> marathons) {
         if (group == null) {
             throw new IllegalArgumentException("O grupo não pode ser nulo ao converter MemberRequestDTO para entidade.");

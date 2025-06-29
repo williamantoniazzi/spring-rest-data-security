@@ -29,10 +29,7 @@ public class OrganizationRequestDTO {
     @NotBlank(message = "O país sede da organização é obrigatório.")
     private String headquartersCountry;
 
-    /**
-     * Converte este DTO de requisição em uma entidade Organization.
-     * @return Uma nova instância da entidade Organization.
-     */
+
     public Organization toEntity() {
         Address entityAddress = null;
         if (this.address != null) {

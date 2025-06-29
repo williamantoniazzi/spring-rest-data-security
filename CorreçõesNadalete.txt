@@ -24,7 +24,7 @@ Excluir package da análise de cobertura. Add em Pom.File, DTO, ENUNS, Exception
 Tarefas.
 > Pipeline com análise estática e execução do teste de unidade com cobertura do sonar -- OK, .github/workflows/sonarci.yml
 > Resolver 5 itens de confiabilidade (realiability)
-> REsolver todos itens médios menos campos de rename, maintainability.
+> Resolver todos itens médios menos campos de rename, maintainability.
 
 
 

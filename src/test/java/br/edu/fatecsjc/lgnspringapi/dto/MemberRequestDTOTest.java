@@ -22,7 +22,7 @@ class MemberRequestDTOTest {
     // Helper para criar uma instância simples de Marathon (entidade)
     // Assume que Marathon.java tem um campo 'name'
     private Marathon createSampleMarathon(Long id, String name) {
-        return Marathon.builder().id(id).name(name).build();
+        return Marathon.builder().id(id).identification(name).build();
     }
 
     private MemberRequestDTO createSampleMemberRequestDTO() {
@@ -137,7 +137,7 @@ class MemberRequestDTOTest {
         assertEquals(group.getId(), member.getGroup().getId());
         assertNotNull(member.getMarathons());
         assertEquals(2, member.getMarathons().size());
-        assertEquals(marathons.get(0).getName(), member.getMarathons().get(0).getName());
+        assertEquals(marathons.get(0).getIdentification(), member.getMarathons().get(0).getIdentification());
     }
 
     @Test

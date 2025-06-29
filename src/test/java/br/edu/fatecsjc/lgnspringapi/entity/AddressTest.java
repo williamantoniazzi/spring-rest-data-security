@@ -58,7 +58,7 @@ class AddressTest {
     @Test
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
-        Address address = new Address("Rua Completa", "789", "Vila", "98765-432", "Taubaté", "SP");
+        Address address = new Address("Rua Completa", "789", "Vila", "98765-432", "Taubaté", "SP", "Brasil");
 
         // Verifica se o construtor AllArgsConstructor funciona
         assertEquals("Rua Completa", address.getStreet());
@@ -67,14 +67,17 @@ class AddressTest {
         assertEquals("98765-432", address.getZipCode());
         assertEquals("Taubaté", address.getCity());
         assertEquals("SP", address.getState());
+        assertEquals("Brasil", address.getCountry());
     }
 
     @Test
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         Address address = createSampleAddress();
+        String toStringResult = address.toString();
+        System.out.println(toStringResult);
         // Verifica se o toString não é nulo e contém partes esperadas (bom para depuração)
-        String expectedToStringPart = "Address(street=Rua Exemplo, number=123, neighborhood=Centro, zipCode=12345-678, city=São José dos Campos, state=SP)";
+        String expectedToStringPart = "Address(street=Rua Exemplo, number=123, neighborhood=Centro, zipCode=12345-678, city=São José dos Campos, state=SP, country=null)";
         assertTrue(address.toString().contains(expectedToStringPart));
     }
 

@@ -2,12 +2,10 @@ package br.edu.fatecsjc.lgnspringapi.dto;
 
 import br.edu.fatecsjc.lgnspringapi.entity.Group;
 import br.edu.fatecsjc.lgnspringapi.entity.Member;
-import br.edu.fatecsjc.lgnspringapi.dto.MemberResponseDTO;
 import br.edu.fatecsjc.lgnspringapi.entity.Organization;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,7 +76,13 @@ class GroupResponseDTOTest {
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
         List<MemberResponseDTO> members = List.of(createSampleMemberResponseDTO(301L, "Resp Member 3"));
-        GroupResponseDTO dto = new GroupResponseDTO(3L, "All Args Response Group", 30L, "All Args Org", members);
+        GroupResponseDTO dto = new GroupResponseDTO(
+                3L,
+                "All Args Response Group",
+                30L,
+                "All Args Org",
+                members
+        );
 
         assertEquals(3L, dto.getId());
         assertEquals("All Args Response Group", dto.getName());
@@ -92,8 +96,10 @@ class GroupResponseDTOTest {
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         GroupResponseDTO dto = createSampleGroupResponseDTO();
-        String expectedToStringPart = "GroupResponseDTO(id=1, name=Response Group, organizationId=10, organizationName=Org Response, members=[MemberResponseDTO(id=101, name=Resp Member 1)";
-        assertTrue(dto.toString().contains(expectedToStringPart));
+        String toStringResult = dto.toString();
+        System.out.println(toStringResult);
+        String expectedToStringPart = "GroupResponseDTO(id=1, name=Response Group, organizationId=10, organizationName=Org Response, members=[MemberResponseDTO(id=101, name=Resp Member 1, age=null, email=null, groupId=null, groupName=null, marathons=null)])";
+        assertTrue(toStringResult.contains(expectedToStringPart));
     }
 
     @Test
@@ -175,28 +181,5 @@ class GroupResponseDTOTest {
 
         assertNotNull(dto);
         assertNull(dto.getMembers()); // Espera que a lista de membros seja nula no DTO
-    }
-
-    // STUB de MemberResponseDTO para o teste, se você ainda não o forneceu.
-    // REMOVA esta classe interna se você já tiver br.edu.fatecsjc.lgnspringapi.dto.MemberResponseDTO.java
-    @lombok.Data
-    @lombok.AllArgsConstructor
-    @lombok.NoArgsConstructor
-    @lombok.Builder
-    static class MemberResponseDTO { // static para que possa ser acessada a partir da classe externa
-        private Long id;
-        private String name;
-        private String email;
-
-        public static MemberResponseDTO fromEntity(Member member) {
-            if (member == null) {
-                return null;
-            }
-            return MemberResponseDTO.builder()
-                    .id(member.getId())
-                    .name(member.getName())
-                    .email(member.getEmail())
-                    .build();
-        }
     }
 }

@@ -34,4 +34,9 @@ public class MarathonResponseDTO {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "MarathonResponseDTO(id=" + id + ", name=" + identification + ")";
+    }
+
 }

@@ -55,8 +55,10 @@ class MarathonRequestDTOTest {
     @DisplayName("Should generate correct toString output")
     void shouldGenerateCorrectToString() {
         MarathonRequestDTO dto = createSampleMarathonRequestDTO();
-        String expectedToStringPart = "MarathonRequestDTO(identification=Request Marathon, weight=50.5, score=7.0)";
-        assertTrue(dto.toString().contains(expectedToStringPart));
+        String toStringResult = dto.toString();
+        System.out.println(toStringResult);
+        String expectedToStringPart = "MarathonRequestDTO(name=Request Marathon, weight=50.5, score=7.0)";
+        assertTrue(toStringResult.contains(expectedToStringPart));
     }
 
     @Test

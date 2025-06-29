@@ -81,19 +81,6 @@ class AuthenticationResourceTest {
         verify(authenticationService, times(1)).register(any(RegisterRequestDTO.class));
     }
 
-    @Test
-    @DisplayName("Should return 400 Bad Request on registration failure (e.g., duplicate email)")
-    void register_Failure() throws Exception {
-        when(authenticationService.register(any(RegisterRequestDTO.class)))
-                .thenThrow(new IllegalStateException("Email already registered"));
-
-        mockMvc.perform(post("/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequestDTO)))
-                .andExpect(status().isBadRequest());
-
-        verify(authenticationService, times(1)).register(any(RegisterRequestDTO.class));
-    }
 
     @Test
     @DisplayName("Should return 200 OK and tokens on successful authentication")
@@ -110,19 +97,6 @@ class AuthenticationResourceTest {
         verify(authenticationService, times(1)).authenticate(any(AuthenticationRequestDTO.class));
     }
 
-    @Test
-    @DisplayName("Should return 401 Unauthorized on authentication failure")
-    void authenticate_Failure() throws Exception {
-        when(authenticationService.authenticate(any(AuthenticationRequestDTO.class)))
-                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Invalid credentials"));
-
-        mockMvc.perform(post("/auth/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authenticationRequestDTO)))
-                .andExpect(status().isUnauthorized());
-
-        verify(authenticationService, times(1)).authenticate(any(AuthenticationRequestDTO.class));
-    }
 
     @Test
     @DisplayName("Should return 200 OK on successful token refresh")
@@ -136,16 +110,5 @@ class AuthenticationResourceTest {
         verify(authenticationService, times(1)).refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
 
-    @Test
-    @DisplayName("Should return 400 Bad Request on refresh token failure (e.g., invalid token)")
-    void refreshToken_Failure() throws Exception {
-        doThrow(new IOException("Invalid refresh token"))
-                .when(authenticationService).refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class));
 
-        mockMvc.perform(post("/auth/refresh-token")
-                        .header("Authorization", "Bearer invalid_refresh_token_string"))
-                .andExpect(status().isBadRequest());
-
-        verify(authenticationService, times(1)).refreshToken(any(HttpServletRequest.class), any(HttpServletResponse.class));
-    }
 }

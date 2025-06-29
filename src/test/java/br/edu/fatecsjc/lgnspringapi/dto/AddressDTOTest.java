@@ -56,22 +56,25 @@ class AddressDTOTest {
     @Test
     @DisplayName("Should test all-args constructor")
     void shouldTestAllArgsConstructor() {
-        AddressDTO addressDTO = new AddressDTO("Rua AllArgs", "30", "Centro All", "22222-222", "Cidade All", "AL");
+        AddressDTO addressDTO = new AddressDTO("Rua AllArgs", "30", "Centro All", "Cidade All", "AL", "Brasil", "22222-222");
 
         assertEquals("Rua AllArgs", addressDTO.getStreet());
         assertEquals("30", addressDTO.getNumber());
         assertEquals("Centro All", addressDTO.getNeighborhood());
-        assertEquals("22222-222", addressDTO.getZipCode());
         assertEquals("Cidade All", addressDTO.getCity());
         assertEquals("AL", addressDTO.getState());
+        assertEquals("Brasil", addressDTO.getCountry());
+        assertEquals("22222-222", addressDTO.getZipCode());
     }
 
     @Test
     @DisplayName("Should generate correct toString output for AddressDTO")
     void shouldGenerateCorrectToString() {
         AddressDTO addressDTO = createSampleAddressDTO();
-        String expectedToStringPart = "AddressDTO(street=Rua DTO Exemplo, number=10, neighborhood=Vila DTO, zipCode=00000-000, city=Cidade DTO, state=DT)";
-        assertTrue(addressDTO.toString().contains(expectedToStringPart));
+        String toStringResult = addressDTO.toString();
+        System.out.println(toStringResult);
+        String expectedToStringPart = "AddressDTO(street=Rua DTO Exemplo, number=10, neighborhood=Vila DTO, city=Cidade DTO, state=DT, country=null, zipCode=00000-000)";
+        assertTrue(toStringResult.contains(expectedToStringPart));
     }
 
     @Test
