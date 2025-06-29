@@ -1,9 +1,14 @@
 -- sample.groups definition
 
-CREATE OR REPLACE SEQUENCE `groups_seq` start with 1 minvalue 1 maxvalue 9223372036854775806 increment by 1 nocache nocycle ENGINE=InnoDB;
+-- Criação da sequência para groups (compatível com H2)
+-- Removido CREATE OR REPLACE SEQUENCE e as opções ENGINE=InnoDB, nocache, nocycle
+CREATE SEQUENCE groups_seq START WITH 1 INCREMENT BY 1;
 
-CREATE TABLE IF NOT EXISTS `groups` (
-    `id` bigint(20) NOT NULL,
-    `name` varchar(255) DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+-- Criação da tabela groups (compatível com H2)
+-- Removido ENGINE=InnoDB, DEFAULT CHARSET, COLLATE
+CREATE TABLE IF NOT EXISTS groups (
+    id BIGINT DEFAULT NEXT VALUE FOR groups_seq PRIMARY KEY,
+    name VARCHAR(255) DEFAULT NULL,
+    organization_id BIGINT,
+    CONSTRAINT fk_groups_organization FOREIGN KEY (organization_id) REFERENCES organizations(id)
+);

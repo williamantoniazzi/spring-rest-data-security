@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # Cria e destrói o schema do DB a cada execução
+    show-sql: true          # Mostra as queries SQL no console
+    properties:
+      hibernate:
+        format_sql: true    # Formata o SQL para legibilidade
+
+  autoconfigure:
+    exclude:
+    # Desabilita o Actuator nos testes se não for necessário
+    # - org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementWebSecurityAutoConfiguration
+
+  # Desabilita Flyway/Liquibase nos testes se você não quiser rodá-los contra o H2
+  # flyway:
+  #   enabled: false
+  # liquibase:
+  #   enabled: false
