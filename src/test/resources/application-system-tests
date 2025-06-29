@@ -1,0 +1,17 @@
+# src/test/resources/application-system-tests.yml
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/sample # Ou o URL do seu DB real para E2E
+    username: seu_usuario
+    password: sua_senha
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none # NÃO USE create-drop se o Flyway for gerenciar o schema aqui!
+  flyway:
+    enabled: true # Mantém o Flyway ativado para este perfil se for gerenciar o schema do DB real
+    # Flyway validation settings (APENAS PARA ESTE CENÁRIO DE CONFLITO)
+    # ESTAS OPÇÕES DEVEM SER USADAS COM CAUTELA! Idealmente, resolva o checksum.
+    validate-on-migrate: false # Desabilita a validação de checksum (NÃO RECOMENDADO EM PRODUÇÃO)
+    out-of-order: true # Permite a aplicação de migrações fora de ordem
+    # ignore-migration-patterns: "*:ignored" # Para ignorar a 0.9 se já tiver sido aplicada manualmente

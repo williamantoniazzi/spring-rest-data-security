@@ -28,3 +28,10 @@ Tarefas.
 
 
 
+
+á está configurada para chamar mvn -B clean verify -Dspring.profiles.active=test (para testes unitários/integração) e mvn -B verify -Psystem-tests -Dspring.profiles.active=system-tests (para testes E2E)
+
+Se for usar H2 para E2E: mvn -B verify -Dspring.profiles.active=test
+
+Se for usar MariaDB real para E2E: mvn -B verify -Psystem-tests -Dspring.profiles.active=system-tests (mas certifique-se que o application-system-tests.yml existe e desabilita a validação do Flyway se necessário).
+

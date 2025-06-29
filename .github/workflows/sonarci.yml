@@ -7,8 +7,8 @@ on:
     branches: [ "**" ]
 
 jobs:
-  build-test-and-analyze:
-    name: Build, Test, and SonarCloud Analysis
+  build-test-and-analyze-all:
+    name: Build, Test (unitários e E2E), and SonarCloud Analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,29 +34,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sonar-
 
-      - name: Build, Run Tests (with H2 Profile), and SonarCloud Scan
+        # PASSO 1: Build, Testes Unitários/Integração (com H2)
+      - name: Build and Run Unit/Integration Tests (with H2 Profile)
+        run: mvn -B clean verify -Dspring.profiles.active=test
+
+      # PASSO 2: Rodar Testes E2E (com o perfil 'system-tests')
+      # ESTE PASSO EXIGE QUE O BANCO DE DADOS EXTERNO ESTEJA DISPONÍVEL
+      # OU QUE SEUS TESTES E2E USAM Testcontainers/H2 TAMBÉM.
+      - name: Run E2E Tests
+        run: mvn -B verify -Psystem-tests -Dspring.profiles.active=test
+
+
+      - name: SonarCloud Scan
         env:
           # Define o token do SonarCloud como uma variável de ambiente.
           # É crucial que este seja um GitHub Secret para segurança.
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn -B clean verify -Dspring.profiles.active=test sonar:sonar \
+          # O SonarCloud enviará o relatório de cobertura JaCoCo consolidado,
+          # que incluirá a cobertura de todos os testes (unitários, integração, E2E)
+          # executados com o H2.
+          mvn -B sonar:sonar \
             -Dsonar.projectKey=williamantoniazzi_spring-rest-data-security \
             -Dsonar.organization=williamantoniazzi \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
-  system-test:
-    name: System (E2E) Tests
-    runs-on: ubuntu-latest
-    needs: build-test-and-analyze
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Run E2E Tests
-        run: mvn verify -Psystem-tests
+            # Se você usar um arquivo .exec consolidado, o SonarQube irá gerá-lo.
+            # -Dsonar.jacoco.reportPaths=target/jacoco-merged.exec # Use este se houver um .exec consolidado
